@@ -1,0 +1,4 @@
+{
+  "extends": "@terpc/tsconfig/base",
+  "include": ["src/**/*", "*.ts", "test"]
+}

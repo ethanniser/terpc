@@ -1,0 +1,18 @@
+{
+  "name": "@terpc/eslint-config",
+  "version": "0.1.0",
+  "license": "MIT",
+  "dependencies": {
+    "@next/eslint-plugin-next": "^14.2.3",
+    "@types/eslint": "^8.56.4",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
+    "eslint-config-turbo": "2.0.6-canary.0",
+    "eslint-plugin-import": "^2.29.1"
+  },
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.10.3",
+    "eslint": "^8.57.0",
+    "typescript": "^5.5.2"
+  }
+}

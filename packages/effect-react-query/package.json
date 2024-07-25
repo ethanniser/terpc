@@ -1,0 +1,70 @@
+{
+  "name": "effect-react-query",
+  "version": "0.0.1",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18.13.0"
+  },
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "lint": "eslint src test --max-warnings 0",
+    "build": "bunchee --tsconfig tsconfig.build.json",
+    "clean": "git clean -xdf dist node_modules",
+    "dev": "bunchee -w --tsconfig tsconfig.build.json --no-clean",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "effect": "^3.5.7"
+  },
+  "devDependencies": {
+    "@terpc/eslint-config": "workspace:*",
+    "@terpc/tsconfig": "workspace:*",
+    "bunchee": "^5.2.1"
+  },
+  "peerDependencies": {
+    "effect": "*"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@terpc/eslint-config/base"
+    ],
+    "rules": {
+      "no-console": "error",
+      "no-restricted-globals": [
+        "error",
+        {
+          "name": "fetch",
+          "message": "fetch should be passed as parameter to support overriding default behaviors"
+        },
+        {
+          "name": "process",
+          "message": "Use `import { process } from 'std-env` instead"
+        }
+      ],
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+    "Effect Gen Function": {
+        "prefix": "eg",
+        "body": [
+            "Effect.gen(function* () {\n\t$0\n})"
+        ],
+        "description": "Effect generator function"
+    },
+    "Yield Effect": {
+        "prefix": "yy",
+        "body": [
+            "yield $0"
+        ],
+        "description": "yield statement"
+    },
+    "const yield Effect": {
+        "prefix": "cyy",
+        "body": [
+            "const $0 = yield $1"
+        ],
+        "description": "const yield statement"
+    },
+}
