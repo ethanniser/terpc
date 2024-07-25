@@ -1,8 +1,11 @@
 /** @type {import('eslint').Linter.Config} */
 const config = {
+  plugins: ["react", "react-hooks", "react-compiler"],
   extends: ["plugin:react/recommended", "plugin:react-hooks/recommended"],
   rules: {
-    "react/prop-types": "off",
+    "react-compiler/react-compiler": "error",
+    "react-hooks/exhaustive-deps": "error",
+    "react-hooks/rules-of-hooks": "error",
   },
   globals: {
     React: "writable",
