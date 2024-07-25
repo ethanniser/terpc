@@ -10,5 +10,5 @@
     "docs",
     { "pattern": "./packages/**" },
     { "pattern": "./examples/**" }
-  ],
+  ]
 }
