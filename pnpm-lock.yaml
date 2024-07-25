@@ -61,10 +61,10 @@ importers:
         version: 3.5.7
     devDependencies:
       '@terpc/eslint-config':
-        specifier: workspace:*
+        specifier: 'workspace:'
         version: link:../../tooling/eslint-config
       '@terpc/tsconfig':
-        specifier: workspace:*
+        specifier: 'workspace:'
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^5.2.1
@@ -77,10 +77,10 @@ importers:
         version: link:../effect-react-query
     devDependencies:
       '@terpc/eslint-config':
-        specifier: workspace:*
+        specifier: 'workspace:'
         version: link:../../tooling/eslint-config
       '@terpc/tsconfig':
-        specifier: workspace:*
+        specifier: 'workspace:'
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^5.2.1
