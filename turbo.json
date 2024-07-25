@@ -15,6 +15,9 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
+    "terpc#build": {
+      "dependsOn": ["effect-react-query#build"]
+    },
     "lint": {
       "dependsOn": ["^build"],
       "outputs": []
