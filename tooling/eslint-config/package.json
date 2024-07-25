@@ -2,6 +2,7 @@
   "name": "@terpc/eslint-config",
   "version": "0.1.0",
   "license": "MIT",
+  "private": true,
   "dependencies": {
     "@next/eslint-plugin-next": "^14.2.3",
     "@types/eslint": "^8.56.4",
