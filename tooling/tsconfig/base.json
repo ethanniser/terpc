@@ -3,6 +3,8 @@
   "extends": "./base.build.jsonc",
   "compilerOptions": {
     "baseUrl": "../..",
-    "paths": {}
+    "paths": {
+      "effect-react-query": ["packages/effect-react-query/src"]
+    }
   }
 }

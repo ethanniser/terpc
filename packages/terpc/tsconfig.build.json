@@ -1,0 +1,4 @@
+{
+  "extends": "@terpc/tsconfig/base.build.jsonc",
+  "include": ["src/**/*", "*.ts", "test"]
+}
