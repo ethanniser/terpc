@@ -395,46 +395,6 @@ export function useEffectMutation<
         : undefined,
   });
 
-  const error = (
-    baseResults.error
-      ? throwOnDefect
-        ? Either.match(
-            Cause.failureOrCause(
-              baseResults.error as unknown as Cause.Cause<TError>, // this is safe because we always throw the full cause and we know that error is not null
-            ),
-            {
-              onLeft: (error) => error as unknown as TExposedError, // if throwOnDefect is true then TExposedError is TError
-              onRight: (_cause) => {
-                throw new Error(
-                  "non fail cause with throwOnDefect: true should have thrown already",
-                );
-              },
-            },
-          )
-        : baseResults.error // if throwOnDefect is false then TExposedError is Cause<TError>, and base error is always Cause<TError>
-      : null
-  ) as TExposedError | null;
-
-  const failureReason = (
-    baseResults.failureReason
-      ? throwOnDefect
-        ? Either.match(
-            Cause.failureOrCause(
-              baseResults.failureReason as unknown as Cause.Cause<TError>, // this is safe because we always throw the full cause and we know that error is not null
-            ),
-            {
-              onLeft: (error) => error as unknown as TExposedError, // if throwOnDefect is true then TExposedError is TError
-              onRight: (_cause) => {
-                throw new Error(
-                  "non fail cause with throwOnDefect: true should have thrown already",
-                );
-              },
-            },
-          )
-        : baseResults.failureReason // if throwOnDefect is false then TExposedError is Cause<TError>, and base error is always Cause<TError>
-      : null
-  ) as TExposedError | null;
-
   //  the results from react query all have getters which trigger fine grained tracking, we need to replicate this when we wrap the results
   const resultsProxy = new Proxy(baseResults, {
     get: (target, prop, receiver) => {
