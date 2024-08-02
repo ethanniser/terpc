@@ -133,47 +133,52 @@ export function useEffectQuery<
       : {}),
   });
 
-  const error = baseResults.error
-    ? throwOnDefect
-      ? Either.match(
-          Cause.failureOrCause(
-            baseResults.error as unknown as Cause.Cause<TError>, // this is safe because we always throw the full cause and we know that error is not null
-          ),
-          {
-            onLeft: (error) => error as unknown as TExposedError, // if throwOnDefect is true then TExposedError is TError
-            onRight: (_cause) => {
-              throw new Error(
-                "non fail cause with throwOnDefect: true should have thrown already",
-              );
-            },
-          },
-        )
-      : baseResults.error // if throwOnDefect is false then TExposedError is Cause<TError>, and base error is always Cause<TError>
-    : null;
+  //  the results from react query all have getters which trigger fine grained tracking, we need to replicate this when we wrap the results
+  const resultsProxy = new Proxy(baseResults, {
+    get: (target, prop, receiver) => {
+      if (prop === "error") {
+        return target.error
+          ? throwOnDefect
+            ? Either.match(
+                Cause.failureOrCause(
+                  target.error as unknown as Cause.Cause<TError>, // this is safe because we always throw the full cause and we know that error is not null
+                ),
+                {
+                  onLeft: (error) => error as unknown as TExposedError, // if throwOnDefect is true then TExposedError is TError
+                  onRight: (_cause) => {
+                    throw new Error(
+                      "non fail cause with throwOnDefect: true should have thrown already",
+                    );
+                  },
+                },
+              )
+            : target.error // if throwOnDefect is false then TExposedError is Cause<TError>, and base error is always Cause<TError>
+          : null;
+      } else if (prop === "failureReason") {
+        return target.failureReason
+          ? throwOnDefect
+            ? Either.match(
+                Cause.failureOrCause(
+                  target.failureReason as unknown as Cause.Cause<TError>, // this is safe because we always throw the full cause and we know that error is not null
+                ),
+                {
+                  onLeft: (error) => error as unknown as TExposedError, // if throwOnDefect is true then TExposedError is TError
+                  onRight: (_cause) => {
+                    throw new Error(
+                      "non fail cause with throwOnDefect: true should have thrown already",
+                    );
+                  },
+                },
+              )
+            : target.failureReason // if throwOnDefect is false then TExposedError is Cause<TError>, and base error is always Cause<TError>
+          : null;
+      }
 
-  const failureReason = baseResults.failureReason
-    ? throwOnDefect
-      ? Either.match(
-          Cause.failureOrCause(
-            baseResults.failureReason as unknown as Cause.Cause<TError>, // this is safe because we always throw the full cause and we know that error is not null
-          ),
-          {
-            onLeft: (error) => error as unknown as TExposedError, // if throwOnDefect is true then TExposedError is TError
-            onRight: (_cause) => {
-              throw new Error(
-                "non fail cause with throwOnDefect: true should have thrown already",
-              );
-            },
-          },
-        )
-      : baseResults.failureReason // if throwOnDefect is false then TExposedError is Cause<TError>, and base error is always Cause<TError>
-    : null;
+      return Reflect.get(target, prop, receiver);
+    },
+  });
 
-  return {
-    ...baseResults,
-    error,
-    failureReason,
-  } as UseQueryResult<TData, TExposedError>;
+  return resultsProxy as UseQueryResult<TData, TExposedError>;
   // this is safe because we are only doing very light remapping
   // it gets mad when you touch error because it is either TError or null depending on other properities, but we honor those cases
 }
@@ -430,20 +435,65 @@ export function useEffectMutation<
       : null
   ) as TExposedError | null;
 
-  return {
-    ...baseResults,
-    mutateAsync: (variables, options) =>
-      baseResults
-        .mutateAsync(variables, options)
-        .then((res) => Exit.succeed(res))
-        // we always throw the cause, so we can always catch it
-        .catch((cause: Cause.Cause<TError>) => Exit.fail(cause)) as Promise<
-        Exit.Exit<TData, TError>
-      >,
-    mutate: (variables, options) => baseResults.mutate(variables, options),
-    error,
-    failureReason,
-  } as Override<
+  //  the results from react query all have getters which trigger fine grained tracking, we need to replicate this when we wrap the results
+  const resultsProxy = new Proxy(baseResults, {
+    get: (target, prop, receiver) => {
+      if (prop === "error") {
+        return target.error
+          ? throwOnDefect
+            ? Either.match(
+                Cause.failureOrCause(
+                  target.error as unknown as Cause.Cause<TError>, // this is safe because we always throw the full cause and we know that error is not null
+                ),
+                {
+                  onLeft: (error) => error as unknown as TExposedError, // if throwOnDefect is true then TExposedError is TError
+                  onRight: (_cause) => {
+                    throw new Error(
+                      "non fail cause with throwOnDefect: true should have thrown already",
+                    );
+                  },
+                },
+              )
+            : target.error // if throwOnDefect is false then TExposedError is Cause<TError>, and base error is always Cause<TError>
+          : null;
+      } else if (prop === "failureReason") {
+        return target.failureReason
+          ? throwOnDefect
+            ? Either.match(
+                Cause.failureOrCause(
+                  target.failureReason as unknown as Cause.Cause<TError>, // this is safe because we always throw the full cause and we know that error is not null
+                ),
+                {
+                  onLeft: (error) => error as unknown as TExposedError, // if throwOnDefect is true then TExposedError is TError
+                  onRight: (_cause) => {
+                    throw new Error(
+                      "non fail cause with throwOnDefect: true should have thrown already",
+                    );
+                  },
+                },
+              )
+            : target.failureReason // if throwOnDefect is false then TExposedError is Cause<TError>, and base error is always Cause<TError>
+          : null;
+      } else if (prop === "mutate") {
+        return (variables, options) => {
+          return target.mutate(variables, options);
+        };
+      } else if (prop === "mutateAsync") {
+        return (variables, options) =>
+          target
+            .mutateAsync(variables, options)
+            .then((res) => Exit.succeed(res))
+            // we always throw the cause, so we can always catch it
+            .catch((cause: Cause.Cause<TError>) => Exit.fail(cause)) as Promise<
+            Exit.Exit<TData, TError>
+          >;
+      }
+
+      return Reflect.get(target, prop, receiver);
+    },
+  });
+
+  return resultsProxy as Override<
     UseMutationResult<TData, TExposedError, TVariables, TContext>,
     {
       mutateAsync: (
