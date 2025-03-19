@@ -2,6 +2,8 @@ import React from "react";
 import type { QueryClient as RQQueryClient } from "@tanstack/react-query";
 import { Context, Effect, Layer, ManagedRuntime } from "effect";
 
+import * as Hooks from "./hooks";
+
 // Memoize layer construction across all calls to `ManagedRuntime.make` across all calls to `makeEffectRuntime`
 // If the layer object itself changes (for instance because the args to the layer function change), then it will be recomputed
 // because it is a new distinct layer object
@@ -24,6 +26,17 @@ class DependentLayer extends Context.Tag("dependent")<
 // because the layer this returns is a new Layer, but PureLayer hasnt changed
 function makeLayer({ n }: { n: number }) {
   return Layer.mergeAll(PureLayer.make, DependentLayer.make(n));
+}
+
+const result = makeEffectRuntime(makeLayer);
+function App() {
+  const [state, _setState] = React.useState(0);
+
+  return (
+    <result.Provider n={state}>
+      <div />
+    </result.Provider>
+  );
 }
 
 export class QueryClient extends Context.Tag("@markprompt/QueryClient")<
@@ -59,8 +72,8 @@ export function makeEffectRuntime<
     }
     return runtime;
   };
-  const useEffectQuery = undefined;
-  const useEffectMutation = undefined;
+  const useEffectQuery = Hooks.makeUseEffectQuery(useEffectRuntime);
+  const useEffectMutation = Hooks.makeUseEffectMutation(useEffectRuntime);
 
   const Provider = (args: Args & { readonly children?: React.ReactNode }) => {
     const deps: unknown[] = [];
@@ -88,13 +101,3 @@ export function makeEffectRuntime<
     useEffectMutation,
   };
 }
-
-export function EffectReactQueryProvider<R, E>({
-  children,
-  queryClient,
-  runtimeContext,
-}: {
-  children: React.ReactNode;
-  queryClient: QueryClient;
-  runtimeContext: React.Context<ManagedRuntime.ManagedRuntime<R, E>>;
-}) {}
