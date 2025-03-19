@@ -2,6 +2,30 @@ import React from "react";
 import type { QueryClient as RQQueryClient } from "@tanstack/react-query";
 import { Context, Effect, Layer, ManagedRuntime } from "effect";
 
+// Memoize layer construction across all calls to `ManagedRuntime.make` across all calls to `makeEffectRuntime`
+// If the layer object itself changes (for instance because the args to the layer function change), then it will be recomputed
+// because it is a new distinct layer object
+const memoMap = Effect.runSync(Layer.makeMemoMap);
+
+// ? if I have two layers, one does not depend on args one does, do they all get recomputer
+
+declare const state: number;
+class PureLayer extends Context.Tag("pure")<PureLayer, number>() {
+  static make = Layer.sync(PureLayer, () => Date.now());
+}
+class DependentLayer extends Context.Tag("dependent")<
+  DependentLayer,
+  number
+>() {
+  static make = (n: number) => Layer.succeed(DependentLayer, n);
+}
+
+// does PureLayer get recomputed?
+// because the layer this returns is a new Layer, but PureLayer hasnt changed
+function makeLayer({ n }: { n: number }) {
+  return Layer.mergeAll(PureLayer.make, DependentLayer.make(n));
+}
+
 export class QueryClient extends Context.Tag("@markprompt/QueryClient")<
   QueryClient,
   RQQueryClient
@@ -38,7 +62,6 @@ export function makeEffectRuntime<
   const useEffectQuery = undefined;
   const useEffectMutation = undefined;
 
-  const memoMap = Effect.runSync(Layer.makeMemoMap); // ? why
   const Provider = (args: Args & { readonly children?: React.ReactNode }) => {
     const deps: unknown[] = [];
     for (const key of Object.keys(args).sort()) {
