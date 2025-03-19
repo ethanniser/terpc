@@ -1,6 +1,7 @@
 - use managed runtime (look at how mp and effect work does)
 - add tests
 - docs
+- update to latest versions
 
 - add useSuspenseQuery
 
